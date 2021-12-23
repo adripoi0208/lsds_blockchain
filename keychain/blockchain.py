@@ -2,6 +2,8 @@
 Blockchain (stub).
 NB: Feel free to extend or modify.
 """
+from collections import OrderedDict
+import hashlib as hl
 
 
 class Block:
@@ -49,6 +51,9 @@ class Transaction:
                    self.origin == other.origin
 
         return False
+
+    def get_string(self):
+        return str(self.key) + "," + str(self.value) + "," + str(self.origin)
 
 
 class Peer:
@@ -106,14 +111,23 @@ class Blockchain:
         If the `mine` method is called, it will collect the current list
         of transactions, and attempt to mine a block with those.
         """
-
-
-
         raise NotImplementedError
 
-    def mine(self):
+    def mine(self, transactions, hashpointer, nonce):
         """Implements the mining procedure."""
-        raise NotImplementedError
+
+        #Here : Put a for loop that will stop once a valid hash is found.
+        while not is_valid_guess(transactions, hashpointer, nonce):
+            #update nonce
+
+        #Here : Once loop is done, it means we found a new block
+        # -> Create new block
+
+    def is_valid_guess(self, transactions, hashpointer, nonce):
+        guess = (";".join([tran.get_string() for tran in transactions]) + str(hashpointer) + str(nonce)).encode()
+        guess_hash = hl.sha256(guess).hexdigest()
+        difficulty = self._difficulty
+        return guess_hash[0:difficulty] == '0' * difficulty
 
     def is_valid(self):
         """Checks if the current state of the blockchain is valid.
