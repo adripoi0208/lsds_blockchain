@@ -1,20 +1,19 @@
 """
 Blockchain (stub).
-
 NB: Feel free to extend or modify.
 """
 
 
 class Block:
-    def __init__(self):
+    def __init__(self, hashpointer, data, proof = None):
         """Describe the properties of a block."""
-        self.hashpointer = None
+        self.hashpointer = hashpointer
         #Holds the list of transactions a.k.a. the key-value pairs.
-        self.data = []
+        self.data = data
 
         #Holds the proof of the block. Since we haven't decided how it will be
         #done, we currently stre it as an unknown object.
-        self.proof = None
+        self.proof = proof
 
     def proof(self):
         """Return the proof of the current block."""
@@ -32,6 +31,7 @@ class Block:
 
         return out
 
+
 class Transaction:
     def __init__(self, key, value, origin):
         """A transaction, in our KV setting. A transaction typically involves
@@ -46,24 +46,29 @@ class Transaction:
         """
         if isinstance(other, Transaction):
             return self.key == other.key and self.value == other.value and
-                   self.origin == ther.origin
+                   self.origin == other.origin
 
         return False
+
 
 class Peer:
     def __init__(self, address):
         """Address of the peer.
-
         Can be extended if desired.
         """
         self._address = address
+
+    def send(self, message):
+        """Sends message to another process
+        """
+        raise NotImplementedError
 
 
 class Blockchain:
     def __init__(self, bootstrap, difficulty):
         """The bootstrap address serves as the initial entry point of
         the bootstrapping procedure. In principle it will contact the specified
-        address, download the peerlist, and start the bootstrapping procedure.
+        addres, download the peerlist, and start the bootstrapping procedure.
         """
         raise NotImplementedError
 
@@ -80,8 +85,11 @@ class Blockchain:
 
     def _add_genesis_block(self):
         """Adds the genesis block to your blockchain."""
-        raise NotImplementedError
-        pass
+        #Need to add proof (+hashpointer ?)
+        genesis_block = Block('',[])
+        self._blocks.append(genesis_block)
+
+        return
 
     def _bootstrap(self, address):
         """Implements the bootstrapping procedure."""
@@ -95,10 +103,12 @@ class Blockchain:
     def add_transaction(self, transaction):
         """Adds a transaction to your current list of transactions,
         and broadcasts it to your Blockchain network.
-
         If the `mine` method is called, it will collect the current list
         of transactions, and attempt to mine a block with those.
         """
+
+
+
         raise NotImplementedError
 
     def mine(self):
@@ -107,7 +117,6 @@ class Blockchain:
 
     def is_valid(self):
         """Checks if the current state of the blockchain is valid.
-
         Meaning, are the sequence of hashes, and the proofs of the
         blocks correct?
         """
