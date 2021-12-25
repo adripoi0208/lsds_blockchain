@@ -71,4 +71,4 @@ api.add_resource(Video, "/video/<int:video_id>")
 #############################################################
 
 if __name__ == "__main__":
-    app.run(debug=True) # Remove debug=true when deploying
+    app.run(debug=True, port=5001) # Remove debug=true when deploying
