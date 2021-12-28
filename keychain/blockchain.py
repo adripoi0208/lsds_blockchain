@@ -113,15 +113,27 @@ class Blockchain:
         """
         raise NotImplementedError
 
-    def mine(self, transactions, hashpointer, nonce):
+    def mine(self, transactions, hashpointer):
         """Implements the mining procedure."""
 
-        #Here : Put a for loop that will stop once a valid hash is found.
-        while not is_valid_guess(transactions, hashpointer, nonce):
-            #update nonce
+        nonce = self.proof_of_work(transactions, hashpointer)
 
-        #Here : Once loop is done, it means we found a new block
-        # -> Create new block
+        block = Block(hashpointer, transactions, nonce)
+        self._blocks.append(block)
+
+        #Je pense qu'il manque des trucs ici ça me parait trop simple.
+
+        return block
+
+    def proof_of_work(self, transactions, hashpointer):
+        # Finds a nonce such that the hash function of this nonce combined with 
+        # the hashpointer and the transactions fills the condition that depends on the difficulty.
+
+        nonce = 0
+        while not self.is_valid_guess(transactions, hashpointer, nonce):
+            nonce += 1
+
+        return nonce
 
     def is_valid_guess(self, transactions, hashpointer, nonce):
         guess = (";".join([tran.get_string() for tran in transactions]) + str(hashpointer) + str(nonce)).encode()
