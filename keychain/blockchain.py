@@ -120,6 +120,9 @@ class Blockchain:
         # Bootstrap the chain with the specified bootstrap address.
         self._bootstrap(bootstrap)
 
+        # Current transactions not mined yet.
+        self._current_transactions = []
+
     def _add_genesis_block(self):
         """Adds the genesis block to your blockchain."""
         #Need to add proof (+hashpointer ?)
@@ -160,7 +163,19 @@ class Blockchain:
         If the `mine` method is called, it will collect the current list
         of transactions, and attempt to mine a block with those.
         """
-        raise NotImplementedError
+
+        # number of transactions before mining the block
+        max_transactions = 1
+
+        self._current_transactions.append(transaction)
+
+        if len(self._current_transactions) >= max_transactions:
+            mine(self._current_transactions, self._blocks[-1].hashpointer)
+
+            # Faire le broadcast ici mais comment ?
+
+            self._current_transactions = []
+
 
     def mine(self, transactions, hashpointer):
         """Implements the mining procedure."""
@@ -176,7 +191,7 @@ class Blockchain:
         return block
 
     def proof_of_work(self, transactions, hashpointer):
-        # Finds a nonce such that the hash function of this nonce combined with 
+        # Finds a nonce such that the hash function of this nonce combined with
         # the hashpointer and the transactions fills the condition that depends on the difficulty.
 
         nonce = 0
