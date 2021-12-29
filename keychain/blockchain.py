@@ -4,7 +4,7 @@ NB: Feel free to extend or modify.
 """
 from collections import OrderedDict
 import hashlib as hl
-
+import time
 
 class Block:
     def __init__(self, hashpointer, data, proof = None):
@@ -69,6 +69,16 @@ class Transaction:
     def get_value(self):
         return self.value
 
+    def load_from_string(t_string):
+        # Creates a Transaction object from a transaction string.
+        split = t_string.split(',')
+        key = split[0]
+        value = split[1]
+        origin = split[2]
+
+        transaction = Transaction(key, value, origin)
+        return transaction
+
 
 class Peer:
     def __init__(self, address):
@@ -84,6 +94,11 @@ class Peer:
 
 
 class Blockchain:
+
+    #Variables used to tune difficulty. Will have to be modified when testing.
+    N_NONCE_CMP = 10
+    MIN_TIME = 600
+
     def __init__(self, bootstrap, difficulty):
         """The bootstrap address serves as the initial entry point of
         the bootstrapping procedure. In principle it will contact the specified
@@ -95,6 +110,9 @@ class Blockchain:
         self._blocks = []
         self._peers = []
         self._difficulty = difficulty
+
+        # Storing times at which we found nonces to be able to tune difficulty.
+        self._found_times = []
 
         # Initialize the chain with the Genesis block.
         self._add_genesis_block()
@@ -119,6 +137,23 @@ class Blockchain:
         """Returns the difficulty level."""
         return self._difficulty
 
+    def tune_difficulty(self):
+        """Tunes difficulty if blocks are found too fast"""
+        times = self._found_times
+
+        if len(times) >= N_NONCE_CMP:
+            total = 0
+            for i in range(len(times)):
+                total += times[i]
+            mean_time = total / len(times)
+            if mean_time < MIN_TIME:
+                self._difficulty += 1
+                self._found_times.clear()
+            else:
+                return
+        else:
+            return
+
     def add_transaction(self, transaction):
         """Adds a transaction to your current list of transactions,
         and broadcasts it to your Blockchain network.
@@ -131,6 +166,7 @@ class Blockchain:
         """Implements the mining procedure."""
 
         nonce = self.proof_of_work(transactions, hashpointer)
+        self.tune_difficulty()
 
         block = Block(hashpointer, transactions, nonce)
         self._blocks.append(block)
@@ -144,8 +180,14 @@ class Blockchain:
         # the hashpointer and the transactions fills the condition that depends on the difficulty.
 
         nonce = 0
+        start_time = time.time()
         while not self.is_valid_guess(transactions, hashpointer, nonce):
             nonce += 1
+        end_time = time.time()
+        elapsed_time = end_time - start_time
+        self._found_times.append(elapsed_time)
+
+        print("Found a nonce after ", elapsed_time," seconds, value of nonce : ", nonce)
 
         return nonce
 
