@@ -33,6 +33,14 @@ class Block:
 
         return out
 
+    def retrieve(self, key):
+        """Returns most recent value of the specified key or None."""
+        for tran in self.data:
+            if key == tran.get_key():
+                return tran.get_value()
+
+        return None
+
 
 class Transaction:
     def __init__(self, key, value, origin):
@@ -54,6 +62,12 @@ class Transaction:
 
     def get_string(self):
         return str(self.key) + "," + str(self.value) + "," + str(self.origin)
+
+    def get_key(self):
+        return self.key
+
+    def get_value(self):
+        return self.value
 
 
 class Peer:
