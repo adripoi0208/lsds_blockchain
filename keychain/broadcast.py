@@ -29,17 +29,21 @@ import requests
 
 class Broadcast:
 	def __init__(self):
-	# Will contain all the peers
-	self.list = []
+		# Will contain all the peers
+		self.list = []
 
 
 	def join(self, Peer):
-	""" Add a new Peer object to the list
-	"""
-	raise NotImplementedError
+		""" Add a new Peer object to the list
+		"""
+		raise NotImplementedError
 
 
-	def broadcast(self, message):
-	""" Broadcast message to all the peers in list
-	"""
-	raise NotImplementedError
+	def broadcast_transaction(self, transaction):
+		""" Broadcasts a transaction to add to the 'mempool'
+		will maybe require to add some consensuce.
+		"""
+		message = {"transaction": transaction.get_string()}
+		for peer in self.list:
+			response = requests.put("http://" + peer.address + "/node/transaction",
+									message)

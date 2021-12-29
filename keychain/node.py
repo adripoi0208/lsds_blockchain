@@ -25,25 +25,25 @@ def parse_arguments():
 
 arguments = parse_arguments()
 blk_chain = blockchain.Blockchain(arguments.bootstrap, arguments.difficulty)
-##############################################################################
-#TODO : Smth
-##############################################################################
-# video_put_args = reqparse.RequestParser()
-# video_put_args.add_argument("name", type=str,
-#                             help="Name of the video")
+mempool = []
+node_put_args = reqparse.RequestParser()
+node_put_args.add_argument("transaction", type=str,
+                            help="string defining a transaction")
 # video_put_args.add_argument("views", type=int,
 #                             help="views of the video")
 # video_put_args.add_argument("likes", type=int,
 #                             help="likes of the video")
 
 class Node_Blockchain(Resource):
-    def get(self):
+    def get(self, action):
         pass
 
-    def put(self):
-        pass
+    def put(self, action):
+        tran = node_put_args.parse_args()
+        transaction = blockchain.Transaction()
+        mempool.append()
 
-api.add_resource(ParamExemple, "/node/<string:name>")
+api.add_resource(ParamExemple, "/node/<string:action>")
 
 if __name__ == "__main__":
     app.run(debug=True, port=5001) # Remove debug=true when deploying
