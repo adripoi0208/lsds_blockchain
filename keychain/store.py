@@ -15,7 +15,12 @@ class Callback:
 
     def wait(self):
         """Wait until the transaction appears in the blockchain."""
-        raise NotImplementedError
+        while True:
+            iterator = self._chain.descendingIterator()
+            for block in iterator:
+                if block.contains(self._transaction):
+                    return
+        # Use a timeout to avoid infinite loops ????
 
     def completed(self):
         """Polls the blockchain to check if the data is available."""
@@ -36,8 +41,7 @@ class Storage:
         The block flag indicates whether the call should block until the value
         has been put onto the blockchain, or if an error occurred.
         """
-        raise NotImplementedError
-        transaction = Transaction(...)
+        transaction = Transaction(key, value, ??ORIGIN??)
         self._blockchain.add_transaction(self, transaction)
         callback = Callback(transaction, self._blockchain)
         if block:
@@ -52,10 +56,28 @@ class Storage:
         or implement some indexing schemes if you would like to do something
         more efficient.
         """
-        raise NotImplementedError
+        iterator = self._blockchain.descendingIterator()
+        for block in iterator:
+            value = block.retrieve(key)
+            if value != None:
+                return value
+
+        return "Key not found"
+
+
 
     def retrieve_all(self, key):
         """Retrieves all values associated with the specified key on the
         complete blockchain.
         """
-        raise NotImplementedError
+        values = []
+        iterator = self._blockchain.descendingIterator()
+        for block in iterator:
+            val = block.retrieve(key)
+            if val != None:
+                values.append(val)
+
+        if values == []:
+            return "Key not found"
+        else:
+            return values
