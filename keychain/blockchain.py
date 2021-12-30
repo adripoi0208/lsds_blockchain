@@ -19,6 +19,10 @@ class Block:
         #done, we currently stre it as an unknown object.
         self.proof = proof
 
+    def hashpointer(self):
+        """Return the hashpointer of the current block."""
+        return self.hashpointer
+
     def proof(self):
         """Return the proof of the current block."""
         return self.proof
@@ -234,3 +238,15 @@ class Blockchain:
         blocks correct?
         """
         raise NotImplementedError
+
+    def receive_block(self, block):
+        """Adds a new block to the blockchain if it is valid"""
+        if valid_block(block):
+            self._blocks.append(block)
+        else:
+            print("Block is invalid !")
+
+    def valid_block(self, block):
+        return is_valid_guess(block.transactions(), block.hashpointer(), block.proof())
+
+
