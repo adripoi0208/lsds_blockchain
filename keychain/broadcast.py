@@ -55,6 +55,8 @@ class Peer:
 		every node's address and the entire blockchain.
 		"""
 		raise NotImplementedError
+		
+		return list_of_peer, list_of_block
 
 
 class Broadcast:
