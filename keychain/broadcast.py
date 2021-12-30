@@ -1,4 +1,5 @@
 import requests
+import pickle
 
 # BASE = "http://127.0.0.1:5001/"
 #
@@ -26,6 +27,18 @@ import requests
 # input()
 # response = requests.get(BASE + "video/1")
 # print(response.json())
+class Peer:
+    def __init__(self, address):
+        """Address of the peer.
+        Can be extended if desired.
+        """
+        self._address = address
+
+    def send(self, message):
+        """Sends message to another process
+        """
+        raise NotImplementedError
+
 
 class Broadcast:
 	def __init__(self):
@@ -43,7 +56,7 @@ class Broadcast:
 		""" Broadcasts a transaction to add to the 'mempool'
 		will maybe require to add some consensuce.
 		"""
-		message = {"transaction": transaction.get_string()}
+		message = {"transaction": pickle.dumps(transaction)}
 		for peer in self.list:
 			response = requests.put("http://" + peer.address + "/node/transaction",
 									message)

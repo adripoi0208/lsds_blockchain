@@ -3,6 +3,7 @@ from flask_restful import Api, Resource, reqparse, abort
 from blockchain import *
 import argparse
 import requests
+import pickle
 
 app = Flask(__name__)
 api = Api(app)
