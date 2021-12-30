@@ -55,8 +55,8 @@ class Transaction:
         """Defines how to compare two transactions using the operator ==.
         """
         if isinstance(other, Transaction):
-            return self.key == other.key and self.value == other.value and
-                   self.origin == other.origin
+            return (self.key == other.key and self.value == other.value and
+                    self.origin == other.origin)
 
         return False
 
