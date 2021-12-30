@@ -6,6 +6,8 @@ from collections import OrderedDict
 import hashlib as hl
 import time
 
+from keychain import Broadcast
+
 class Block:
     def __init__(self, hashpointer, data, proof = None):
         """Describe the properties of a block."""
@@ -95,7 +97,7 @@ class Blockchain:
 
         # Initialize the properties.
         self._blocks = []
-        self._peers = []
+        self._broadcast = Broadcast()
         self._difficulty = difficulty
 
         # Storing times at which we found nonces to be able to tune difficulty.
@@ -121,7 +123,12 @@ class Blockchain:
     def _bootstrap(self, address):
         """Implements the bootstrapping procedure."""
         peer = Peer(address)
-        raise NotImplementedError
+        list_of_peer, list_of_block = peer.request_bootstrap()
+
+        self._blocks = list_of_block
+
+        for peer in list_of_peer:
+            self._broadcast.join(peer)
 
     def difficulty(self):
         """Returns the difficulty level."""
@@ -151,20 +158,39 @@ class Blockchain:
         of transactions, and attempt to mine a block with those.
         """
 
-        #self._current_transactions.append(transaction)
+        # Add the new transaction to the transaction pool.
+        self._current_transactions.append(transaction)
 
-        # Broadcast the transaction here
+        # Broadcast the new transaction.
+        self._broadcast.broadcast_transaction(transaction)
+
+        # If we are a miner, attempt to mine a block with all the
+        # current transactions.
+        if miner:
+            new_block = mine(self._current_transactions,
+                             self._blocks[-1].hashpointer)
+
+            # Once mined, broadcast the new block and clear the
+            # current transactions.
+            self._broadcast_block(new_block)
+            self._current_transactions = []
 
 
+    def receive_transaction(self, transaction):
+        """Receive a new transaction from a broadcast to add to the pool of
+        current transactions.
+        """
+        add_transaction ?
 
+    def receive_block(self, block):
+        """Receive a new mined block from the broadcast, and add it to the
+        blockchain if it is is_valid
+        """
+        #if is_valid()
 
-
-        #if len(self._current_transactions) >= max_transactions:
-        #    mine(self._current_transactions, self._blocks[-1].hashpointer)
-
-            # Faire le broadcast ici mais comment ?
-
-        #    self._current_transactions = []
+        # J'ai peur que quand on ajoute le block à la blockchain dans la fonction mine,
+        # un autre node ait calculé le meme bloc et l'ait ajouté à sa propre blockchain à la place
+        # et qu'on ait un conflit, donc je cherche comment faire avec l'heuristique des 6
 
 
     def mine(self, transactions, hashpointer):
