@@ -30,19 +30,36 @@ mempool = []
 node_put_args = reqparse.RequestParser()
 node_put_args.add_argument("transaction", type=str,
                             help="string defining a transaction")
-# video_put_args.add_argument("views", type=int,
-#                             help="views of the video")
-# video_put_args.add_argument("likes", type=int,
-#                             help="likes of the video")
+node_put_args.add_argument("block", type=str,
+                            help="string defining a block")
 
 class Node_Blockchain(Resource):
     def get(self, action):
-        pass
+        if action == "bootstrap":
+            ret["list_of_block"] = pickle.dumps(blk_chain._blocks)
+            ret["list_of_peer"] = pickle.dumps(blk_chain._broadcast.list)
+            ret["current_transactions"] = pickle.dumps(blk_chain._current_transactions)
+            return ret
+
+        else:
+            abort(501, message="Method not implemented...")
 
     def put(self, action):
-        tran = node_put_args.parse_args()
-        transaction = blockchain.Transaction()
-        mempool.append()
+        if action == "transaction":
+            args = node_put_args.parse_args()
+            #Deserializes the transaction
+            transaction = pickle.loads(args["transaction"])
+            mempool.append()
+            abort(501, message="Method not implemented...")
+
+        elif action == "block":
+            args = node_put_args.parse_args()
+            #Deserializes the block
+            transaction = pickle.loads(args["block"])
+            abort(501, message="Method not implemented...")
+
+        else:
+            abort(501, message="Method not implemented...")
 
 api.add_resource(ParamExemple, "/node/<string:action>")
 
