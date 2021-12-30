@@ -34,10 +34,27 @@ class Peer:
         """
         self._address = address
 
-    def send(self, message):
-        """Sends message to another process
+    def send_transaction(self, transaction):
+        """sends a transaction to the peer in order to add it to the mempool.
         """
+		message = {"transaction": pickle.dumps(transaction)}
+		response = requests.put("http://" + self._address + "/node/transaction",
+								message)
         raise NotImplementedError
+
+	def send_block(self, block):
+		"""Sends a block to the peer in order to add it to the
+		blockchain (if valid).
+        """
+		message = {"block": pickle.dumps(block)}
+        response = requests.put("http://" + self._address + "/node/block",
+								message)
+
+	def request_bootstrap(self):
+		"""Sends a bootstrap message to the peer that returns the list of
+		every node's address and the entire blockchain.
+		"""
+		raise NotImplementedError
 
 
 class Broadcast:
@@ -51,12 +68,14 @@ class Broadcast:
 		"""
 		raise NotImplementedError
 
+	def broadcast_block(self, block):
+		"""Broadcasts a block in order to add it to the blockchain (if valid).
+		"""
+		raise NotImplementedError
 
 	def broadcast_transaction(self, transaction):
 		""" Broadcasts a transaction to add to the 'mempool'
 		will maybe require to add some consensuce.
 		"""
-		message = {"transaction": pickle.dumps(transaction)}
 		for peer in self.list:
-			response = requests.put("http://" + peer.address + "/node/transaction",
-									message)
+			peer.send_transaction(transaction)
