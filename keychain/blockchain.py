@@ -80,19 +80,6 @@ class Transaction:
         return transaction
 
 
-class Peer:
-    def __init__(self, address):
-        """Address of the peer.
-        Can be extended if desired.
-        """
-        self._address = address
-
-    def send(self, message):
-        """Sends message to another process
-        """
-        raise NotImplementedError
-
-
 class Blockchain:
 
     #Variables used to tune difficulty. Will have to be modified when testing.
@@ -157,24 +144,27 @@ class Blockchain:
         else:
             return
 
-    def add_transaction(self, transaction):
+    def add_transaction(self, transaction, miner):
         """Adds a transaction to your current list of transactions,
         and broadcasts it to your Blockchain network.
         If the `mine` method is called, it will collect the current list
         of transactions, and attempt to mine a block with those.
         """
 
-        # number of transactions before mining the block
-        max_transactions = 1
+        #self._current_transactions.append(transaction)
 
-        self._current_transactions.append(transaction)
+        # Broadcast the transaction here
 
-        if len(self._current_transactions) >= max_transactions:
-            mine(self._current_transactions, self._blocks[-1].hashpointer)
+
+
+
+
+        #if len(self._current_transactions) >= max_transactions:
+        #    mine(self._current_transactions, self._blocks[-1].hashpointer)
 
             # Faire le broadcast ici mais comment ?
 
-            self._current_transactions = []
+        #    self._current_transactions = []
 
 
     def mine(self, transactions, hashpointer):

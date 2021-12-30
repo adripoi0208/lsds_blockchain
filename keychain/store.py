@@ -34,6 +34,7 @@ class Storage:
         been specified, you should allocate the mining process.
         """
         self._blockchain = Blockchain(bootstrap, difficulty)
+        self._miner = miner
 
     def put(self, key, value, block=True):
         """Puts the specified key and value on the Blockchain.
@@ -42,7 +43,7 @@ class Storage:
         has been put onto the blockchain, or if an error occurred.
         """
         transaction = Transaction(key, value, ??ORIGIN??)
-        self._blockchain.add_transaction(self, transaction)
+        self._blockchain.add_transaction(self, transaction, self._miner)
         callback = Callback(transaction, self._blockchain)
         if block:
             callback.wait()
