@@ -24,11 +24,13 @@ class Peer:
         response = requests.put("http://" + self._address + "/node/block",
 								message)
 
-	def request_bootstrap(self):
+	def request_bootstrap(self, local_address):
 		"""Sends a bootstrap message to the peer that returns the list of
 		every node's address and the entire blockchain.
 		"""
-		response = requests.get("http://" + self._address + "/node/bootstrap")
+        address = {"address": local_address}
+		response = requests.get("http://" + self._address + "/node/bootstrap",
+                                address)
 
 		list_of_block = pickle.loads(response.json()["list_of_block"])
 		current_transactions = pickle.loads(response.json()["current_transactions"])
@@ -38,24 +40,25 @@ class Peer:
 
 
 class Broadcast:
-	def __init__(self):
+	def __init__(self, port, address):
 		# Will contain all the peers
-		self.list = []
+		self._list = []
+        self._port = port
 
 	def join(self, peer):
 		""" Add a new Peer object to the list
 		"""
-		self.list.append(peer)
+		self._list.append(peer)
 
 	def broadcast_block(self, block):
 		"""Broadcasts a block in order to add it to the blockchain (if valid).
 		"""
-		for peer in self.list:
+		for peer in self._list:
 			peer.send_block(block)
 
 	def broadcast_transaction(self, transaction):
 		""" Broadcasts a transaction to add to the 'mempool'
 		will maybe require to add some consensuce.
 		"""
-		for peer in self.list:
+		for peer in self._list:
 			peer.send_transaction(transaction)
