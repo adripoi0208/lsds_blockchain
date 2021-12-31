@@ -1,6 +1,6 @@
 from flask import Flask, request
 from flask_restful import Api, Resource, reqparse, abort
-from blockchain import *
+#from blockchain import *
 import argparse
 import requests
 import pickle
@@ -27,7 +27,7 @@ class Node_Blockchain(Resource):
         if action == "bootstrap":
             #If a bootstrap is requested, it's possibly from a new node
             args = node_args.parse_args()
-            peer = Peer(args["address"])
+            peer = Peer(request.remote_addr + ":" + args["port"])
             self.blk_chain._broadcast.join(peer)
 
             ret["list_of_block"] = pickle.dumps(self.blk_chain._blocks)
@@ -51,6 +51,11 @@ class Node_Blockchain(Resource):
             block = pickle.loads(args["block"])
             self.blk_chain.receive_block(block)
 
+        elif action == "peer_joined":
+            args = node_args.parse_args()
+            peer = Peer(args["address"])
+            self.blk_chain._broadcast.join(peer)
+            
         else:
             abort(501, message="Method not implemented...")
 
@@ -66,6 +71,8 @@ def run_node(blockchain, port):
                                 help="string defining a transaction")
     node_args.add_argument("block", type=str,
                                 help="string defining a block")
+    node_args.add_argument("port", type=str,
+                                help="string containing the port of a node")
     node_args.add_argument("address", type=str,
                                 help="string containing the address of a node")
     api.add_resource(Node_Blockchain, "/node/<string:action>",
@@ -84,10 +91,10 @@ if __name__ == "__main__":
                                 help="string defining a transaction")
     node_args.add_argument("block", type=str,
                                 help="string defining a block")
-    node_args.add_argument("address", type=str,
-                                help="string containing the address of a node")
+    node_args.add_argument("port", type=str,
+                                help="string containing the port of a node")
     #For the
-    blockchain = Blockchain(arguments.bootstrap, arguments.difficulty)
+    blockchain = []#Blockchain(arguments.bootstrap, arguments.difficulty)
     api.add_resource(Node_Blockchain, "/node/<string:action>",
                      resource_class_kwargs={"blockchain":blockchain})
 
