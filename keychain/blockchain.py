@@ -184,17 +184,7 @@ class Blockchain:
         """Receive a new transaction from a broadcast to add to the pool of
         current transactions.
         """
-        add_transaction ?
-
-    def receive_block(self, block):
-        """Receive a new mined block from the broadcast, and add it to the
-        blockchain if it is is_valid
-        """
-        #if is_valid()
-
-        # J'ai peur que quand on ajoute le block à la blockchain dans la fonction mine,
-        # un autre node ait calculé le meme bloc et l'ait ajouté à sa propre blockchain à la place
-        # et qu'on ait un conflit, donc je cherche comment faire avec l'heuristique des 6
+        add_transaction(self, transaction, False)
 
 
     def mine(self, transactions, hashpointer):
@@ -248,5 +238,3 @@ class Blockchain:
 
     def valid_block(self, block):
         return is_valid_guess(block.transactions(), block.hashpointer(), block.proof())
-
-
