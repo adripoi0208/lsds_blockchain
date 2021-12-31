@@ -30,9 +30,9 @@ class Peer:
 		"""
 		response = requests.get("http://" + self._address + "/node/bootstrap")
 
-		list_of_block = response.json()["list_of_block"]
-		current_transactions = response.json()["current_transactions"]
-		list_of_peer = response.json()["list_of_peer"]
+		list_of_block = pickle.loads(response.json()["list_of_block"])
+		current_transactions = pickle.loads(response.json()["current_transactions"])
+		list_of_peer = pickle.loads(response.json()["list_of_peer"])
 
 		return list_of_peer, list_of_block, current_transactions
 
